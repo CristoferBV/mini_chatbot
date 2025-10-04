@@ -17,7 +17,7 @@ def _ensure_index():
 def health(request):
     return Response({"status": "ok"})
 
-@api_view(["GET"])
+@api_view(["GET"])                            # No se esta usando
 def get_faq_suggestions(request):
     limit = int(request.GET.get("limit", 10))
     items = list_faqs(limit=limit)

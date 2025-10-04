@@ -9,11 +9,7 @@ _vectorizer: Optional[TfidfVectorizer] = None
 _matrix: Optional[spmatrix] = None
 
 def build_index(items: List[Dict]) -> int:
-    """
-    Recibe una lista de items tipo:
-      {"id": "...", "question": "...", "answer": "...", "tags": "..."}
-    y construye el índice TF-IDF en memoria.
-    """
+    
     global _items, _vectorizer, _matrix
     _items = items or []
     corpus = [(it.get("question") or "").strip() for it in _items]
