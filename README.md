@@ -41,7 +41,6 @@ Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicable
   - [Cargar FAQs en Firestore](#cargar-faqs-en-firestore)
 - [Personalización del widget](#personalización-del-widget)
 - [Build y despliegue](#build-y-despliegue)
-- [Solución de problemas](#solución-de-problemas)
 - [Licencia](#licencia)
 
 ---
