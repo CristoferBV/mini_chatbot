@@ -5,36 +5,26 @@ import "./App.css";
 export default function App() {
   return (
     <div className="site">
-      {/* Header minimal */}
+      {/* Header minimal (sin botones) */}
       <header className="nav">
         <div className="container nav-inner">
           <div className="brand">
             <span className="logo">🤖</span>
             <span>Mini Chatbot</span>
           </div>
-          <nav className="nav-links">
-            <button className="btn btn-primary" onClick={() => window.__openChat?.()}>
-              Probar el chatbot
-            </button>
-          </nav>
+          <nav className="nav-links">{/* vacío a propósito */}</nav>
         </div>
       </header>
 
-      {/* Hero */}
+      {/* Hero simple */}
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
             <h1>Atiende preguntas al instante</h1>
             <p>
-              Tu asistente virtual para responder preguntas frecuentes 24/7,
-              con respuestas claras y sugerencias cuando no entiende.
+              Asistente virtual para responder preguntas frecuentes 24/7 con
+              respuestas claras y sugerencias cuando no entiende.
             </p>
-            <div className="cta-row">
-              <button className="btn btn-primary" onClick={() => window.__openChat?.()}>
-                Hablar con el asistente
-              </button>
-              <a className="btn btn-ghost" href="#about">Saber más</a>
-            </div>
           </div>
           <div className="hero-art">
             <BotIllustration />
@@ -46,47 +36,41 @@ export default function App() {
       <section id="about" className="section">
         <div className="container">
           <h2 className="section-title">Sobre el chatbot</h2>
-          <ul className="about-list">
+          <ul className="about-list big">
             <li>💬 Responde FAQs en segundos.</li>
             <li>🧠 Sugiere alternativas si no entiende tu pregunta.</li>
             <li>⚡ Ligero y fácil de integrar en cualquier web.</li>
             <li>🔒 Seguro: variables y credenciales fuera del repositorio.</li>
           </ul>
-          <div className="center">
-            <button className="btn" onClick={() => window.__openChat?.()}>
-              Abrir chat
-            </button>
-          </div>
         </div>
       </section>
 
-      {/* Footer simple */}
+      {/* Footer con más información y copyright */}
       <footer className="footer">
-        <div className="container footer-inner">
+        <div className="container footer-single">
           <div className="brand">
             <span className="logo">🤖</span>
             <span>Mini Chatbot</span>
           </div>
-          <p className="muted-text">React + Django · Demo minimal</p>
+          <p className="copyright">
+            © 2025 CristoferBV — Todos los derechos reservados.
+          </p>
         </div>
       </footer>
 
       {/* Widget flotante */}
       <ChatWidget
-        title="Asistente"
+        // título fijo "Mini Chatbot" ya está por defecto
         placeholder="Escribe tu pregunta..."
         initialOpen={false}
         welcome="¡Hola! ¿En qué puedo ayudarte?"
-        // Si usas la versión “Pepe-like”, puedes pasar también:
-        // assistantName="Pepe"
-        // assistantAvatar="🤖" // o URL a imagen
-        // brandColor="#0ea5e9"
+        assistantAvatar="🤖"
+        brandColor="#6366f1"
       />
     </div>
   );
 }
 
-/* --- Ilustración inline --- */
 function BotIllustration() {
   return (
     <svg viewBox="0 0 320 320" className="bot-svg" aria-hidden="true">
@@ -96,7 +80,7 @@ function BotIllustration() {
           <stop offset="100%" stopColor="#06b6d4" />
         </linearGradient>
       </defs>
-      <circle cx="160" cy="160" r="140" fill="url(#g)" opacity="0.12" />
+      <circle cx="160" cy="160" r="140" fill="url(#g)" opacity="0.18" />
       <rect x="60" y="90" rx="16" ry="16" width="200" height="140" fill="#fff" stroke="#e5e7eb" />
       <circle cx="120" cy="150" r="10" fill="#111827" />
       <circle cx="200" cy="150" r="10" fill="#111827" />
