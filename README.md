@@ -189,10 +189,10 @@ flowchart LR
   W[Widget React (Vite)];
   D[Django REST];
   F[Firestore (FAQs)];
-  U -->|escribe| W;
-  W -->|POST /api/v1/ask| D;
-  D -->|consulta| F;
-  D -->|answer / suggestions| W;
+  U --> W;
+  W --> D;
+  D --> F;
+  D --> W;
 ```
 
 ### Cómo “entiende” el bot
