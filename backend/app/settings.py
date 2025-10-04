@@ -58,8 +58,6 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-api-admin-token",
 ]
 
-#CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
-
 # --- URLs / WSGI ---
 ROOT_URLCONF = 'app.urls'
 

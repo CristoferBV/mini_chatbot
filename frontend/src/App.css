@@ -1,0 +1,55 @@
+:root {
+  --bg:#ffffff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
+}
+
+* { box-sizing:border-box; }
+html, body, #root { height:100%; }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.container { width:min(1100px,92vw); margin:0 auto; }
+
+/* Header */
+.nav { position:sticky; top:0; background:rgba(255,255,255,.8);
+  backdrop-filter:blur(8px); border-bottom:1px solid var(--border); z-index:20; }
+.nav-inner { display:flex; align-items:center; justify-content:space-between; padding:12px 0; }
+.brand { display:flex; align-items:center; gap:8px; font-weight:700; }
+.logo { display:inline-flex; width:28px; height:28px; align-items:center; justify-content:center; border-radius:8px; background:#fff; border:1px solid var(--border); }
+.nav-links { display:flex; align-items:center; gap:12px; }
+
+/* Hero */
+.hero { padding:60px 0 30px; }
+.hero-grid { display:grid; grid-template-columns: 1.1fr .9fr; gap:40px; align-items:center; }
+.hero-copy h1 { font-size: clamp(28px, 4vw, 40px); margin:0 0 10px; }
+.hero-copy p { color:var(--muted); margin:0 0 16px; }
+.cta-row { display:flex; gap:12px; margin-bottom:10px; }
+.hero-art { display:flex; justify-content:center; }
+.bot-svg { width:100%; max-width:360px; height:auto; }
+
+/* About */
+.section { padding:44px 0; }
+.section-title { font-size:24px; margin:0 0 14px; }
+.about-list { list-style:none; padding:0; margin:0 0 16px; display:grid; gap:8px; color:var(--text); }
+.center { text-align:center; }
+
+/* Footer */
+.footer { border-top:1px solid var(--border); background:#fff; padding:22px 0; }
+.footer-inner { display:flex; align-items:center; justify-content:space-between; }
+.muted-text { color:var(--muted); }
+
+/* Buttons */
+.btn { border-radius:10px; padding:10px 14px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+.btn:hover { transform:translateY(-1px); box-shadow:0 10px 24px rgba(0,0,0,.06); }
+.btn-primary { border-color:var(--text); background:var(--text); color:#fff; }
+.btn-ghost { background:#fff; }
+
+/* Haz que el FAB del chat resalte un poco */
+.chat-fab { box-shadow: 0 15px 30px rgba(17,24,39,.18), 0 0 0 6px rgba(139,92,246,.08); }
+.chat-fab:hover { transform: translateY(-2px) scale(1.02); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns:1fr; }
+}

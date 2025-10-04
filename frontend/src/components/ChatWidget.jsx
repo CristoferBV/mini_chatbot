@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
+import "./ChatWidget.css";
 
+// URL robusta
 const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-const API_PATH = import.meta.env.VITE_API_PATH || "/api/v1/ask";
-const API_URL = `${API_BASE.replace(/\/$/, "")}${API_PATH}`;
+const API_PATH = import.meta.env.VITE_API_PATH || "/api/v1/ask/"; // con slash final
+const API_URL = `${API_BASE.replace(/\/$/, "")}/${API_PATH.replace(/^\//, "")}`;
 const API_ADMIN_TOKEN = import.meta.env.VITE_API_ADMIN_TOKEN || "";
 
 export default function ChatWidget({
-  title = "Chat",
-  placeholder = "Escribe un mensaje...",
+  title = "Asistente",
+  assistantName = "Pepe",
+  assistantAvatar = "🤖",          // puede ser emoji o URL a imagen
+  brandColor = "#0ea5e9",          // color principal (cyan por defecto)
+  placeholder = "Escribe tu pregunta...",
   initialOpen = false,
-  welcome = "",
+  welcome = "¡Hola! ¿En qué puedo ayudarte?",
+  initialSuggestions = ["¿Tienen planes y precios?", "¿Puedo cambiar de plan?", "Política de reembolso"]
 }) {
   const [open, setOpen] = useState(initialOpen);
   const [input, setInput] = useState("");
@@ -20,73 +26,89 @@ export default function ChatWidget({
   const panelRef = useRef(null);
   const listRef = useRef(null);
 
-  // Auto-scroll al final cuando llegan mensajes
+  // Exponer open/close a la página (para botones externos)
   useEffect(() => {
-    if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+    window.__openChat = () => setOpen(true);
+    window.__closeChat = () => setOpen(false);
+    return () => { delete window.__openChat; delete window.__closeChat; };
+  }, []);
+
+  // Agregar sugerencias iniciales
+  useEffect(() => {
+    if (initialSuggestions?.length) {
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", type: "suggestions", content: "Quizá te interese:", suggestions: initialSuggestions }
+      ]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Auto-scroll
+  useEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
   }, [messages, open]);
 
-  // Cerrar con ESC cuando está abierto
+  // ESC para cerrar
   useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape" && open) setOpen(false);
-    };
+    const onKey = (e) => e.key === "Escape" && open && setOpen(false);
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  async function send() {
-    const text = input.trim();
+  // Enviar (permite override para sugerencias)
+  async function send(overrideText) {
+    const text = (overrideText ?? input).trim();
     if (!text) return;
 
-    const userMsg = { role: "user", content: text };
-    setMessages((m) => [...m, userMsg]);
+    setMessages((m) => [...m, { role: "user", content: text }]);
     setInput("");
     setLoading(true);
 
     try {
-      // Ajusta el payload a lo que espera tu backend.
-      // Ejemplo común: { question: "..." } o { message: "..." }
-      const body = { question: text };
-
-      const headers = {
-        "Content-Type": "application/json",
-      };
+      const headers = { "Content-Type": "application/json" };
       if (API_ADMIN_TOKEN) headers["X-API-ADMIN-TOKEN"] = API_ADMIN_TOKEN;
 
       const res = await fetch(API_URL, {
         method: "POST",
         headers,
-        body: JSON.stringify(body),
+        body: JSON.stringify({ message: text }),
       });
 
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errText = await res.text();
-        throw new Error(`HTTP ${res.status}: ${errText}`);
+        const errorText =
+          Array.isArray(data?.message) ? data.message.join(" ")
+          : data?.detail || JSON.stringify(data) || res.statusText;
+        throw new Error(errorText || `HTTP ${res.status}`);
       }
 
-      // Ajusta el parseo de respuesta:
-      // - Si tu backend devuelve { answer: "..." }
-      // - O { data: { reply: "..." } } etc.
-      const data = await res.json();
-      const botText =
-        data?.answer ||
-        data?.reply ||
-        data?.message ||
-        data?.response ||
-        JSON.stringify(data);
+      if (data?.answer) {
+        setMessages((m) => [...m, { role: "assistant", content: data.answer }]);
+        return;
+      }
 
+      if (data?.status === "not_understood") {
+        const byScore = (a, b) => (b.score || 0) - (a.score || 0);
+        const fromMatches = (data.matches || [])
+          .sort(byScore)
+          .map((m) => m.question)
+          .filter(Boolean);
+        const all = [...(data.suggestions || []), ...fromMatches];
+        const unique = [...new Set(all)].slice(0, 5);
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", type: "suggestions", content: "No estoy seguro de eso. ¿Te refieres a…?", suggestions: unique }
+        ]);
+        return;
+      }
+
+      const botText = data?.reply || data?.message || JSON.stringify(data) || "No tengo una respuesta por ahora.";
       setMessages((m) => [...m, { role: "assistant", content: botText }]);
     } catch (err) {
       setMessages((m) => [
         ...m,
-        {
-          role: "assistant",
-          content:
-            "Lo siento, ocurrió un error al consultar el backend.\n\n" +
-            String(err?.message || err),
-        },
+        { role: "assistant", content: "Lo siento, ocurrió un error.\n\n" + String(err?.message || err) },
       ]);
     } finally {
       setLoading(false);
@@ -98,60 +120,71 @@ export default function ChatWidget({
     send();
   }
 
+  // Detectar si el avatar es URL o emoji/texto
+  const isImg = typeof assistantAvatar === "string" && /^(https?:|data:|\/)/.test(assistantAvatar);
+
   return (
     <>
-      {/* Botón flotante */}
       {!open && (
         <button
+          className="chat-fab"
+          style={{ background: `linear-gradient(135deg, ${brandColor}, #7c3aed)`, color: "#fff" }}
           onClick={() => setOpen(true)}
           aria-label="Abrir chat"
-          style={styles.fab}
         >
           💬
         </button>
       )}
 
-      {/* Panel del chat */}
       <div
         ref={panelRef}
         aria-hidden={!open}
-        style={{
-          ...styles.panel,
-          transform: open ? "translateY(0)" : "translateY(24px)",
-          opacity: open ? 1 : 0,
-          pointerEvents: open ? "auto" : "none",
-        }}
+        className={`chat-panel ${open ? "is-open" : ""}`}
+        style={{ ["--brand"]: brandColor }}
       >
-        <div style={styles.header}>
-          <strong>{title}</strong>
-          <button onClick={() => setOpen(false)} style={styles.iconBtn} aria-label="Cerrar">
-            ✕
-          </button>
+        <div className="chat-header">
+          <div className="header-left">
+            <div className="chat-avatar" aria-hidden="true">
+              {isImg ? <img src={assistantAvatar} alt="" /> : <span>{assistantAvatar}</span>}
+            </div>
+            <div className="chat-title">
+              <strong>{assistantName}</strong>
+              <small>Asistente virtual</small>
+            </div>
+          </div>
+          <div className="header-actions">
+            <button className="chat-icon-btn" title="Minimizar" onClick={() => setOpen(false)}>—</button>
+            <button className="chat-icon-btn" title="Cerrar" onClick={() => setOpen(false)}>✕</button>
+          </div>
         </div>
 
-        <div ref={listRef} style={styles.messages}>
-          {messages.map((m, i) => (
-            <MessageBubble key={i} role={m.role} text={m.content} />
-          ))}
+        <div ref={listRef} className="chat-messages" aria-live="polite">
+          {messages.map((m, i) =>
+            m.type === "suggestions" ? (
+              <SuggestionsBubble key={i} text={m.content} options={m.suggestions || []} onPick={(opt) => send(opt)} />
+            ) : (
+              <MessageBubble key={i} role={m.role} text={m.content} />
+            )
+          )}
           {loading && <TypingBubble />}
         </div>
 
-        <form onSubmit={onSubmit} style={styles.form}>
+        <form onSubmit={onSubmit} className="chat-form">
           <input
             type="text"
+            className="chat-input"
             placeholder={placeholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            style={styles.input}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+            }}
           />
           <button
             type="submit"
+            className="chat-send"
             disabled={loading || !input.trim()}
-            style={{
-              ...styles.sendBtn,
-              opacity: loading || !input.trim() ? 0.6 : 1,
-              cursor: loading || !input.trim() ? "not-allowed" : "pointer",
-            }}
+            style={{ background: brandColor, borderColor: brandColor }}
           >
             Enviar
           </button>
@@ -164,26 +197,22 @@ export default function ChatWidget({
 function MessageBubble({ role, text }) {
   const me = role === "user";
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: me ? "flex-end" : "flex-start",
-        marginBottom: 8,
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "80%",
-          padding: "10px 12px",
-          borderRadius: 12,
-          background: me ? "#111827" : "#f3f4f6",
-          color: me ? "#ffffff" : "#111827",
-          whiteSpace: "pre-wrap",
-          lineHeight: 1.3,
-          boxShadow: "0 1px 2px rgba(0,0,0,0.06)",
-        }}
-      >
-        {text}
+    <div className={`msg-row ${me ? "me" : "other"}`}>
+      <div className={`msg-bubble ${me ? "me" : "other"}`}>{text}</div>
+    </div>
+  );
+}
+
+function SuggestionsBubble({ text, options, onPick }) {
+  return (
+    <div className="sugg-block">
+      <div className="sugg-text">{text}</div>
+      <div className="sugg-chips">
+        {options.map((opt, i) => (
+          <button key={i} className="sugg-chip" onClick={() => onPick(opt)}>
+            {opt}
+          </button>
+        ))}
       </div>
     </div>
   );
@@ -191,111 +220,8 @@ function MessageBubble({ role, text }) {
 
 function TypingBubble() {
   return (
-    <div style={{ display: "flex", gap: 6, margin: "8px 0 16px 0" }}>
-      <Dot />
-      <Dot />
-      <Dot />
+    <div className="typing-dots">
+      <span></span><span></span><span></span>
     </div>
   );
 }
-
-function Dot() {
-  const base = {
-    width: 8,
-    height: 8,
-    borderRadius: "50%",
-    background: "#9ca3af",
-    animation: "chatdot 1.2s infinite ease-in-out",
-  };
-  return <span style={base} />;
-}
-
-const styles = {
-  fab: {
-    position: "fixed",
-    right: 20,
-    bottom: 20,
-    width: 56,
-    height: 56,
-    borderRadius: "9999px",
-    border: "1px solid #e5e7eb",
-    background: "#ffffff",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-    fontSize: 22,
-    lineHeight: "56px",
-    textAlign: "center",
-    cursor: "pointer",
-  },
-  panel: {
-    position: "fixed",
-    right: 20,
-    bottom: 20,
-    width: 360,
-    maxWidth: "92vw",
-    height: 520,
-    maxHeight: "75vh",
-    background: "#ffffff",
-    border: "1px solid #e5e7eb",
-    borderRadius: 16,
-    boxShadow: "0 20px 50px rgba(0,0,0,0.12)",
-    display: "flex",
-    flexDirection: "column",
-    transition: "all .25s ease",
-  },
-  header: {
-    height: 48,
-    padding: "0 12px",
-    borderBottom: "1px solid #f3f4f6",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  iconBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 8,
-    border: "1px solid #e5e7eb",
-    background: "#fff",
-    cursor: "pointer",
-  },
-  messages: {
-    flex: 1,
-    padding: 12,
-    overflowY: "auto",
-    background: "#fff",
-  },
-  form: {
-    display: "flex",
-    gap: 8,
-    padding: 12,
-    borderTop: "1px solid #f3f4f6",
-  },
-  input: {
-    flex: 1,
-    border: "1px solid #e5e7eb",
-    borderRadius: 10,
-    padding: "10px 12px",
-    outline: "none",
-    fontSize: 14,
-  },
-  sendBtn: {
-    border: "1px solid #111827",
-    background: "#111827",
-    color: "#fff",
-    padding: "10px 14px",
-    borderRadius: 10,
-    fontSize: 14,
-  },
-};
-
-// Animación simple para los 3 puntitos
-const styleEl = document.createElement("style");
-styleEl.textContent = `
-@keyframes chatdot {
-  0%, 80%, 100% { transform: scale(0.8); opacity: .4; }
-  40% { transform: scale(1); opacity: 1; }
-}
-span[style*="animation: chatdot"]:nth-child(2) { animation-delay: .15s; }
-span[style*="animation: chatdot"]:nth-child(3) { animation-delay: .3s; }
-`;
-document.head.appendChild(styleEl);
