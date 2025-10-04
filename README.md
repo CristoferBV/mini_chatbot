@@ -1,6 +1,6 @@
 # Mini Chatbot — React + Django REST + Firestore
 
-![Mini Chatbot Preview](frontend/public/assets/mini-chatbot.png)
+![Mini Chatbot Preview](frontend/public/assets/preview.png)
 
 Widget de chat **embebible** (flotante) que responde **Preguntas Frecuentes (FAQ)** usando un backend en **Django REST** y datos en **Firebase/Firestore**.  
 Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicables) para guiar al usuario.
