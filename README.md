@@ -87,19 +87,19 @@ mini_chatbot/
 │  └─ requirements.txt
 └─ frontend/
    ├─ public/
-   │  └─ assets/
+   │  └─ assets/                    # imágenes e íconos del proyecto
    │     └─ Mini-Chatbot.png
    ├─ src/
    │  ├─ components/
-   │  │  ├─ ChatWidget.jsx
+   │  │  ├─ ChatWidget.jsx          # componente principal del chatbot flotante
    │  │  └─ ChatWidget.css
-   │  ├─ App.jsx
+   │  ├─ App.jsx                    # componente raíz de la aplicación
    │  ├─ App.css
-   │  └─ main.jsx
+   │  └─ main.jsx                   # punto de entrada principal de React
    ├─ .env
-   ├─ index.html
+   ├─ index.html                    # plantilla HTML base del proyecto
    ├─ vite.config.js
-   ├─ package.json
+   ├─ package.json                  # dependencias y scripts npm
    └─ package-lock.json
 ```
 
