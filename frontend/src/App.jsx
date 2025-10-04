@@ -10,7 +10,7 @@ export default function App() {
         <div className="container nav-inner">
           <div className="brand">
             <span className="logo">
-              <img src="../public/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
+              <img src="/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
             </span>
             <span>Mini Chatbot</span>
           </div>
@@ -52,7 +52,7 @@ export default function App() {
         <div className="container footer-single">
           <div className="brand">
             <span className="logo">
-              <img src="../public/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
+              <img src="/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
             </span>
             <span>Mini Chatbot</span>
           </div>
