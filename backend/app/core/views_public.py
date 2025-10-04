@@ -21,7 +21,6 @@ def health(request):
 def get_faq_suggestions(request):
     limit = int(request.GET.get("limit", 10))
     items = list_faqs(limit=limit)
-    # solo exponemos preguntas y tags (no respuestas)
     return Response([{"id": i["id"], "question": i["question"], "tags": i["tags"]} for i in items])
 
 @api_view(["POST"])

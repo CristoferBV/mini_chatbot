@@ -1,41 +1,65 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
+from rapidfuzz.fuzz import ratio
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-from rapidfuzz.fuzz import ratio
+from scipy.sparse import spmatrix
 
-_vectorizer = None
-_matrix = None
 _items: List[Dict] = []
+_vectorizer: Optional[TfidfVectorizer] = None
+_matrix: Optional[spmatrix] = None
 
 def build_index(items: List[Dict]) -> int:
-    """items: [{id, question, answer, tags}]"""
-    global _vectorizer, _matrix, _items
-    _items = items[:]
-    if not _items:
-        _vectorizer = _matrix = None
-        return 0
-    corpus = [it["question"] or "" for it in _items]
-    # Nota: scikit-learn solo trae stop_words='english'. Usamos sin stopwords para evitar errores.
+    """
+    Recibe una lista de items tipo:
+      {"id": "...", "question": "...", "answer": "...", "tags": "..."}
+    y construye el índice TF-IDF en memoria.
+    """
+    global _items, _vectorizer, _matrix
+    _items = items or []
+    corpus = [(it.get("question") or "").strip() for it in _items]
     _vectorizer = TfidfVectorizer(lowercase=True)
+    if len(corpus) == 0:
+        _matrix = None
+        return 0
     _matrix = _vectorizer.fit_transform(corpus)
     return len(_items)
 
 def query(text: str, top_k: int = 5) -> List[Dict]:
-    if not _matrix or not _vectorizer:
+    """
+    Devuelve una lista ordenada desc por score con forma:
+      {
+        "id": "...",
+        "question": "...",
+        "answer": "...",
+        "score": 0.87,
+        "cosine": 0.83,
+        "fuzzy": 0.92,
+        "item": {...}    # el documento completo (compatibilidad)
+      }
+    """
+    if _vectorizer is None or _matrix is None:
         return []
+    if getattr(_matrix, "shape", (0, 0))[0] == 0 or getattr(_matrix, "shape", (0, 0))[1] == 0:
+        return []
+
     qv = _vectorizer.transform([text or ""])
     sims = cosine_similarity(qv, _matrix).flatten()
-    scored = []
+
+    scored: List[Dict] = []
     for i, s in enumerate(sims):
-        fz = ratio((text or "").lower(), (_items[i]["question"] or "").lower()) / 100.0
-        score = 0.75 * float(s) + 0.25 * float(fz)
-        scored.append((i, score))
-    scored.sort(key=lambda x: x[1], reverse=True)
-    out = []
-    for idx, sc in scored[:top_k]:
-        it = _items[idx]
-        out.append({
-            "id": it["id"], "question": it["question"], "answer": it["answer"],
-            "tags": it.get("tags"), "score": round(sc, 3)
+        src = _items[i]
+        q_src = (src.get("question") or "")
+        fz = ratio((text or "").lower(), q_src.lower()) / 100.0
+        score = float(0.7 * float(s) + 0.3 * float(fz))
+        scored.append({
+            "id": src.get("id"),
+            "question": q_src,
+            "answer": src.get("answer", ""),
+            "score": score,
+            "cosine": float(s),
+            "fuzzy": float(fz),
+            "item": src,  # por si tu vista usa best["item"]["answer"]
         })
-    return out
+
+    scored.sort(key=lambda x: x["score"], reverse=True)
+    return scored[:max(1, top_k)]
