@@ -25,18 +25,6 @@ def build_index(items: List[Dict]) -> int:
     return len(_items)
 
 def query(text: str, top_k: int = 5) -> List[Dict]:
-    """
-    Devuelve una lista ordenada desc por score con forma:
-      {
-        "id": "...",
-        "question": "...",
-        "answer": "...",
-        "score": 0.87,
-        "cosine": 0.83,
-        "fuzzy": 0.92,
-        "item": {...}    # el documento completo (compatibilidad)
-      }
-    """
     if _vectorizer is None or _matrix is None:
         return []
     if getattr(_matrix, "shape", (0, 0))[0] == 0 or getattr(_matrix, "shape", (0, 0))[1] == 0:
@@ -58,7 +46,7 @@ def query(text: str, top_k: int = 5) -> List[Dict]:
             "score": score,
             "cosine": float(s),
             "fuzzy": float(fz),
-            "item": src,  # por si tu vista usa best["item"]["answer"]
+            "item": src,
         })
 
     scored.sort(key=lambda x: x["score"], reverse=True)

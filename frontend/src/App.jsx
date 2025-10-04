@@ -5,18 +5,18 @@ import "./App.css";
 export default function App() {
   return (
     <div className="site">
-      {/* Header minimal (sin botones) */}
+      {/* Header */}
       <header className="nav">
         <div className="container nav-inner">
           <div className="brand">
             <span className="logo">🤖</span>
             <span>Mini Chatbot</span>
           </div>
-          <nav className="nav-links">{/* vacío a propósito */}</nav>
+          <nav className="nav-links">{}</nav>
         </div>
       </header>
 
-      {/* Hero simple */}
+      {/* Hero */}
       <section className="hero">
         <div className="container hero-grid">
           <div className="hero-copy">
@@ -32,7 +32,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Sobre el chatbot (breve) */}
+      {/* Sobre el chatbot */}
       <section id="about" className="section">
         <div className="container">
           <h2 className="section-title">Sobre el chatbot</h2>
@@ -45,7 +45,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Footer con más información y copyright */}
+      {/* Footer */}
       <footer className="footer">
         <div className="container footer-single">
           <div className="brand">
@@ -60,7 +60,6 @@ export default function App() {
 
       {/* Widget flotante */}
       <ChatWidget
-        // título fijo "Mini Chatbot" ya está por defecto
         placeholder="Escribe tu pregunta..."
         initialOpen={false}
         welcome="¡Hola! ¿En qué puedo ayudarte?"

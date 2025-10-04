@@ -7,11 +7,6 @@ _client_instance = None
 COLLECTION = "faqs"
 
 def get_client():
-    """
-    Crea el cliente de Firestore usando:
-    - FIREBASE_CREDENTIALS_JSON (contenido JSON en .env), o
-    - FIREBASE_CREDENTIALS (ruta ABSOLUTA al JSON).
-    """
     global _client_instance
     if _client_instance is not None:
         return _client_instance

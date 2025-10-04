@@ -7,7 +7,7 @@ urlpatterns = [
     path("health", health, name="health"),
     path("faqs", get_faq_suggestions, name="faqs"),
     path("ask", ask, name="ask"),
-    # Admin (protegidos por API key)
+    # Admin
     path("admin/faqs", upsert_faq, name="admin_faqs"),
     path("admin/reindex", reindex, name="admin_reindex"),
 ]
