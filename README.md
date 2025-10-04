@@ -184,15 +184,16 @@ Haz clic en el **botón flotante** (FAB) para abrir el chat.
 ### Diagrama
 
 ```mermaid
-flowchart LR
-  U[Usuario];
-  W[Widget React (Vite)];
-  D[Django REST];
-  F[Firestore (FAQs)];
-  U --> W;
-  W --> D;
-  D --> F;
-  D --> W;
+graph LR
+  U["Usuario"]
+  W["Widget React (Vite)"]
+  D["Django REST"]
+  F["Firestore (FAQs)"]
+
+  U -->|escribe| W
+  W -->|POST /api/v1/ask| D
+  D -->|consulta| F
+  D -->|answer / suggestions| W
 ```
 
 ### Cómo “entiende” el bot
