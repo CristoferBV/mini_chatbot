@@ -17,7 +17,6 @@ venv/
 # Archivos de configuración sensibles
 *.env
 backend/secure/firebase-key.json
-backend/.env
 
 # Archivos de migraciones compilados
 */migrations/*.pyc
