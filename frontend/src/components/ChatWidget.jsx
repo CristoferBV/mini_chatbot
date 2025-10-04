@@ -27,7 +27,7 @@ function getInitialMessages(welcome, initialSuggestions) {
 export default function ChatWidget({
   title = "Mini Chatbot",
   assistantAvatar = "/assets/Mini-Chatbot.png",
-  brandColor = "#020203ff",
+  brandColor = "#f1f1f9ff",
   placeholder = "Escribe tu pregunta...",
   initialOpen = false,
   welcome = "¡Hola! ¿En qué puedo ayudarte?",
@@ -155,7 +155,7 @@ export default function ChatWidget({
       {!open && (
         <button
           className="chat-fab"
-          style={{ background: `linear-gradient(135deg, ${brandColor}, #000000ff)` }}
+          style={{ background: `linear-gradient(135deg, ${brandColor}, #62f1eaff)` }}
           onClick={() => setOpen(true)}
           aria-label="Abrir chat"
         >
