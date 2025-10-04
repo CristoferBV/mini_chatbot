@@ -183,14 +183,16 @@ Haz clic en el **botón flotante** (FAB) para abrir el chat.
 
 ### Diagrama
 
-> El error provenía del texto libre en la arista. En Mermaid es más robusto **encerrar el texto del enlace entre barras `|...|`**.
-
 ```mermaid
 flowchart LR
-  U[Usuario] -->|escribe| W[Widget React (Vite)]
-  W -->|POST /api/v1/ask| D[Django REST]
-  D -->|consulta| F[Firestore (FAQs)]
-  D -->|answer / suggestions| W
+  U[Usuario];
+  W[Widget React (Vite)];
+  D[Django REST];
+  F[Firestore (FAQs)];
+  U -->|escribe| W;
+  W -->|POST /api/v1/ask| D;
+  D -->|consulta| F;
+  D -->|answer / suggestions| W;
 ```
 
 ### Cómo “entiende” el bot
