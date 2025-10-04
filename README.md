@@ -2,6 +2,12 @@
 
 ![Mini Chatbot Preview](frontend/public/assets/preview.png)
 
+![React](https://img.shields.io/badge/Frontend-React-blue?logo=react)
+![Django](https://img.shields.io/badge/Backend-Django-green?logo=django)
+![Firestore](https://img.shields.io/badge/Database-Firestore-orange?logo=firebase)
+![License](https://img.shields.io/badge/License-MIT-lightgrey)
+
+
 Widget de chat **embebible** (flotante) que responde **Preguntas Frecuentes (FAQ)** usando un backend en **Django REST** y datos en **Firebase/Firestore**.  
 Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicables) para guiar al usuario.
 
