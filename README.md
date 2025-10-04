@@ -1,5 +1,7 @@
 # Mini Chatbot — React + Django REST + Firestore
 
+![Mini Chatbot Preview](frontend/public/assets/mini-chatbot.png)
+
 Widget de chat **embebible** (flotante) que responde **Preguntas Frecuentes (FAQ)** usando un backend en **Django REST** y datos en **Firebase/Firestore**.  
 Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicables) para guiar al usuario.
 
@@ -9,7 +11,7 @@ Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicable
 > - ✅ UX cuidada: sugerencias si no entiende, “typing” y autoscroll
 > - ✅ Resetea la conversación al cerrar el widget
 > - ✅ Configurable desde el front (color de marca, saludo, icono, etc.)
-> - ✅ Sin LLMs ni servicios de terceros prohibidos: **solo Django + Firestore**
+> - ✅ Sin LLMs ni servicios de terceros: **solo Django + Firestore**
 > - ✅ Seguridad práctica: `.env`, CORS, y push protection de secretos
 
 ---
@@ -41,6 +43,7 @@ Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicable
 ## Requisitos
 
 - **Python 3.11+**
+- **Django 5.2.7+**
 - **Node 18+** (o 20 LTS)
 - **pip** y **venv**
 - Proyecto de **Firebase** con **Firestore** habilitado y credencial de **Service Account** (JSON)
@@ -48,8 +51,6 @@ Cuando no encuentra una respuesta exacta, ofrece **sugerencias** (chips clicable
 ---
 
 ## Estructura del repo
-
-> Actualizado según las carpetas reales en las capturas.
 
 ```
 mini_chatbot/
@@ -301,16 +302,6 @@ npm run build
 - Define `DEBUG=0`, `ALLOWED_HOSTS` con tu dominio/IP y `CORS_ALLOWED_ORIGINS` con el dominio del front.
 - Mantén `GOOGLE_APPLICATION_CREDENTIALS` apuntando al **path en el servidor** del JSON de Service Account.
 - Usa `gunicorn` + `whitenoise` (o nginx) para producción.
-
----
-
-## Solución de problemas
-
-- **Mermaid no renderiza el diagrama** → verifica que el bloque tenga ```mermaid y que los textos de arista estén entre `|...|`.
-- **CORS bloquea el request** → revisa `CORS_ALLOWED_ORIGINS` en el backend y que el front use la URL correcta en `.env`.
-- **404 en `/api/v1/ask/`** → confirma que `app/urls.py` incluya la ruta y que el `project urls.py` incluya `core.urls`.
-- **Permisos de Firestore** → en desarrollo puedes usar reglas abiertas temporalmente; en producción restringe por IP o tokens.
-- **Credenciales Firebase** → el path en `GOOGLE_APPLICATION_CREDENTIALS` debe existir en el servidor y ser legible por el proceso.
 
 ---
 

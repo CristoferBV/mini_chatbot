@@ -9,7 +9,9 @@ export default function App() {
       <header className="nav">
         <div className="container nav-inner">
           <div className="brand">
-            <span className="logo">🤖</span>
+            <span className="logo">
+              <img src="../public/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
+            </span>
             <span>Mini Chatbot</span>
           </div>
           <nav className="nav-links">{}</nav>
@@ -49,7 +51,9 @@ export default function App() {
       <footer className="footer">
         <div className="container footer-single">
           <div className="brand">
-            <span className="logo">🤖</span>
+            <span className="logo">
+              <img src="../public/assets/Mini-Chatbot.png" alt="Mini Chatbot" width={30} />
+            </span>
             <span>Mini Chatbot</span>
           </div>
           <p className="copyright">
@@ -63,7 +67,7 @@ export default function App() {
         placeholder="Escribe tu pregunta..."
         initialOpen={false}
         welcome="¡Hola! ¿En qué puedo ayudarte?"
-        assistantAvatar="🤖"
+        assistantAvatar="/assets/Mini-Chatbot.png"
         brandColor="#6366f1"
       />
     </div>
