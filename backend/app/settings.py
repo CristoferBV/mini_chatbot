@@ -52,14 +52,13 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()]
 CORS_ALLOW_ALL_ORIGINS = False
 if not CORS_ALLOWED_ORIGINS and DEBUG:
-    CORS_ALLOW_ALL_ORIGINS = True  # dev: permitir todo
+    CORS_ALLOW_ALL_ORIGINS = True  
 
-# Permitir los headers que manda tu frontend en el fetch (content-type y x-api-admin-token)
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-api-admin-token",
 ]
 
-CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
+#CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"]
 
 # --- URLs / WSGI ---
 ROOT_URLCONF = 'app.urls'
